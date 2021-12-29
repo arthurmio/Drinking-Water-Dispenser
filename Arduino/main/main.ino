@@ -3,7 +3,7 @@
 /// Description : Principal code for drinking water dispenser
 /// Author      : Arthur MARIANO
 /// Github      : https://github.com/arthurmio/Drinking-Water-Dispenser
-/// Date        : 26/12/2021
+/// Date        : 27/12/2021
 //////////////////////////////////////////////////////////////////////////
 
 #include <Arduino.h>
@@ -33,12 +33,10 @@ volatile int coinsChange = 0;
 volatile float coinsValue = 0.00;
 volatile float coinsValueSaved = 0.00;
 volatile float moneyValue = 0.00;
-//volatile bool payed = false;
-volatile int payed = 0;
+volatile bool payed = false;
 
 // Solenoid //
 const int solenoidPin = 4; 
-volatile int valve = 0;
 
 
 ///////////
@@ -86,9 +84,9 @@ void loop(){
   flowCounter=0.00;
   flow=0.00;
   pulse_freq=0.00;
-  while(payed==1){
+  while(payed==true){
     currentTime = millis();
-    if(currentTime >= (lastTime + 1000)) // count always the flow every second 
+    if(currentTime >= (lastTime + 100)) // count always the flow every second 
     {   
       lastTime = currentTime; 
       flow = (pulse_freq / factorK) / 60; // flow in L/min
@@ -99,8 +97,10 @@ void loop(){
       Serial.print(flowCounter, DEC); 
       Serial.println(" L");
       flowCount(moneyValue, flowCounter);
+      digitalWrite(solenoidPin, LOW); // solenoid open
     }
   }
+  digitalWrite(solenoidPin, HIGH); // solenoid closed
 }
 
 ///////////////
@@ -116,16 +116,14 @@ void pulseFlow() // interrupt fonction for flow meter
 void flowCount(int moneyValue, float flowCounter){ // calcul for volume
   if(moneyValue == 1){
     if(flowCounter >= 0.50){
-    valve = 0;
-    payed = 0;
-    Serial.println("0.50L water served");
+      payed = false;
+      Serial.println("0.50L water served");
     }
   }
   else if(moneyValue == 2){
-    if(flowCounter >= 1){
-    valve = 0;
-    payed = 0;
-    Serial.println("1L water served");
+    if(flowCounter >= 0.97){
+      payed = false;
+      Serial.println("1L water served");
     }
   }
   coinsValueSaved=0;
@@ -141,16 +139,11 @@ void pulseMachine() // interrupt fonction for change machine
 // Solenoid //
 void solenoidOpen(int moneyValue){
   if(moneyValue==1){ // 0.50sole
-    //Serial.println("0.50Sole");
-    payed = 1;
-    valve = 1;
+    payed = true;
   }
   else if(moneyValue==2){ // 1sole
-    //Serial.println("1Sole");
-    payed = 1;
-    valve = 1;
+    payed = true;
   }
   else
-    payed = 0;
-    valve = 0;
+    payed = false;
 }
