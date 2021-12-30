@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////
-/// Name        : change-machine.ino
-/// Description : Code for testing the change machine CH-926
+/// Name        : coin-acceptor.ino
+/// Description : Code for testing the coin-acceptor CH-926
 /// Author      : Arthur MARIANO
 /// Github      : https://github.com/arthurmio/Drinking-Water-Dispenser
-/// Date        : 26/12/2021
+/// Date        : 30/12/2021
 //////////////////////////////////////////////////////////////////////////
 #include <Arduino.h>
 #include <Time.h>
@@ -14,15 +14,15 @@ volatile float lastTime = 0.00;
 volatile float start = 0.00;
 volatile float coinsValueSavedTime = 0.00;
 
-const int changeMachinePin = 3;
+const int coinAcceptorPin = 3;
 volatile float coinsValue = 0.00;
 volatile float coinsValueSaved = 0.00;
 
 
 void setup() {
-  pinMode(changeMachinePin, INPUT); 
+  pinMode(coinAcceptorPin, INPUT); 
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(changeMachinePin), pulseMachine, RISING);
+  attachInterrupt(digitalPinToInterrupt(coinAcceptorPin), pulseMachine, RISING);
   
 }
 
@@ -43,7 +43,7 @@ void loop() {
   }
 }
 
-void pulseMachine() // interrupt fonction for flowMeter
+void pulseMachine() // interrupt fonction for coin acceptor
 {
   coinsValue  = coinsValue + 0.5;
   start = millis();

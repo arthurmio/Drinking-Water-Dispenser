@@ -27,9 +27,8 @@ volatile float flow = 0.00;
 volatile float waterVolume = 0.00;
 volatile float flowCounter = 0.00;
 
-// Change Machine //
-const int changeMachinePin = 3; // interrupt port
-volatile int coinsChange = 0;
+// Coin Acceptor //
+const int coinAcceptorPin = 3; // interrupt port
 volatile float coinsValue = 0.00;
 volatile float coinsValueSaved = 0.00;
 volatile float moneyValue = 0.00;
@@ -44,11 +43,11 @@ const int solenoidPin = 4;
 ///////////
 void setup() {
   pinMode(flowMeterPin, INPUT);
-  pinMode(changeMachinePin, INPUT); 
+  pinMode(coinAcceptorPin, INPUT); 
   pinMode(solenoidPin, OUTPUT);
   Serial.begin(9600);
   attachInterrupt(digitalPinToInterrupt(flowMeterPin), pulseFlow, RISING);
-  attachInterrupt(digitalPinToInterrupt(changeMachinePin), pulseMachine, RISING);
+  attachInterrupt(digitalPinToInterrupt(coinAcceptorPin), pulseMachine, RISING);
   currentTime = millis();
   lastTime = currentTime;
 }
@@ -129,9 +128,8 @@ void flowCount(int moneyValue, float flowCounter){ // calcul for volume
   coinsValueSaved=0;
 }
 
-// Change Machine //
-void pulseMachine() // interrupt fonction for change machine
-{
+// Coin Acceptor //
+void pulseMachine(){ // interrupt fonction for coin acceptor
   coinsValue  = coinsValue + 0.5;
   start = millis();
 }
